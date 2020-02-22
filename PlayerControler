@@ -1,0 +1,76 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayerControler : MonoBehaviour
+{
+	//-----------------VARIABLES-------------------//
+	// Switches
+	bool canJump;
+
+	//variables
+	public float JumpVelocity;
+	public float fallMultiplayer;
+	public float lowJumpMultiplayer;
+	public float HorizontalSpeed;
+
+	private Rigidbody2D rb;
+
+	private float HorizontaLinput; 
+
+
+	//-------------EXECUTION----------------------//
+	//executes onces when starting the scene
+	void Start () 
+	{
+		//initialize shortcut variables
+		rb = GetComponent <Rigidbody2D> ();
+	}
+		
+	//executes every scene's frame
+	void Update ()
+	{		
+		//if press left or right keys multiply axis vectors (1 and -1) by a public variable
+		//and fill the velocity's player variable with the result
+		HorizontaLinput = Input.GetAxis ("Horizontal");
+		rb.velocity = new Vector2 (HorizontaLinput * HorizontalSpeed, rb.velocity.y);
+
+		//just jump (increase velocity in order of public variable's value)
+		if (Input.GetKey ("up") && canJump) {
+			rb.velocity = new Vector2 (0, JumpVelocity);
+		}
+    
+		//when falling multiply a public variable by the gravity(negative value) and add the result to the Y-velocitiy
+		//so the player fall faster in negative Y-axis
+		if (rb.velocity.y < 0)
+		{
+			rb.velocity += Vector2.up * Physics2D.gravity.y * fallMultiplayer * Time.deltaTime;
+			//when jumping if hold the jump key the player jumps higher 
+			//(in code, if doesn't hold the jump key add a negative value(gravitiy * public variable) to Y-axis's velocity)
+		} else if (rb.velocity.y > 0 && !Input.GetKey ("up")) 
+		{
+			rb.velocity += Vector2.up * Physics2D.gravity.y * lowJumpMultiplayer * Time.deltaTime;
+		}
+	}
+
+	//function called in every collision stay encountering
+	void OnCollisionStay2D (Collision2D collision)
+	{
+		Debug.Log (collision.contacts[0].normal.y);
+		
+		//the normal vector (1 or -1) is oposit to the movement
+		//so when collision with ground (negative velocity vector) the normal vector = 1
+		if (collision.contacts [0].normal.y > 0 && collision.contacts[0].normal.y <= 1)
+		{
+			//if player grounded set the Jump's switch to true
+			canJump = true;
+		}
+	}
+
+	//function called in every exit collision
+	void OnCollisionExit2D (Collision2D collision)
+	{
+    //if Player isn't touching any object, it can't jump
+		canJump = false;
+	}
+}
