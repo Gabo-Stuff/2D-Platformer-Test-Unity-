@@ -1,0 +1,20 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraBehaviour : MonoBehaviour 
+{
+//--------------------------VARIABLES----------------------------//
+	//in this public Transform variable drag and drop the player's sprite 
+	public Transform target;
+	//in this public Vector3 variable set the camera's relative position to the player's transform
+	public Vector3 offset;
+
+//-----------------------EXECUTION---------------------------------//
+	// function called once per frame
+	void LateUpdate () 
+	{
+		//position of the camera's transform equal to target(player) transform + Vector3 relative position
+		transform.position = target.position + offset;
+	}
+}
